@@ -137,24 +137,35 @@ class SimilarChecker:
         self.attention_hist = BoolHist(max_time_between_images, 2)
         self.t_since_image = 0
 
-    def is_similar(self, frame):
+    def is_similar(self, frame, print_status=False):
         # rein in attention frequency
         if self.attention_hist.true_rate() > self.max_attention_frequency:
             for row in self.sections:
                 for section in row:
                     section.expand_threshold()
         # check if similar
-        similar = True
+        similar = []
         for row_i, row in enumerate(self.sections):
+            similar_row = []
             for col_i, section in enumerate(row):
                 xi = ((col_i + 0) * frame.shape[1]) // len(row)
                 xf = ((col_i + 1) * frame.shape[1]) // len(row)
                 yi = ((row_i + 0) * frame.shape[0]) // len(self.sections)
                 yf = ((row_i + 1) * frame.shape[0]) // len(self.sections)
-                similar &= section.is_similar(frame[yi:yf, xi:xf])
+                similar_row.append(section.is_similar(frame[yi:yf, xi:xf]))
+            similar.append(similar_row)
         # pay attention if not
-        self.attention_hist.update(not similar)
-        if not similar:
+        attention = not all(all(row) for row in similar)
+        self.attention_hist.update(attention)
+        if attention:
+            print(datetime.datetime.now().isoformat())
+            for row_i, row in enumerate(similar):
+                for similar in row:
+                    if similar:
+                        print('-', end='')
+                    else:
+                        print('X', end='')
+                print()
             self.attention = self.attention_span
             self.t_since_image = 0
             return False
@@ -196,7 +207,7 @@ def main():
         if args.preview:
             cv2.imshow('preview', frame)
             cv2.waitKey(1)
-        if not args.skip_similar or not similar_checker.is_similar(frame):
+        if not args.skip_similar or not similar_checker.is_similar(frame, print_status=True):
             file_name = (
                 '{:%Y-%m-%b-%d_%H-%M-%S}.{}'
                 .format(
