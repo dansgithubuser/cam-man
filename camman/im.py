@@ -1,3 +1,5 @@
+import cv2
+
 def put_text(
     frame,
     s,

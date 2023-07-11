@@ -12,7 +12,7 @@ args = parser.parse_args()
 
 cam = camman.Cam(args.camera_index)
 motion_detector = camman.detector.Motion(args.background_smoothness, args.threshold)
-window = camman.sink.Window()
+window = camman.sink.Window(closeable=True)
 
 while True:
     im = cam.read()

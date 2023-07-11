@@ -10,8 +10,8 @@ class Timelapse:
         Path(path).mkdir(exist_ok=True)
 
     def update(self, im):
-        now = datetime.now()
-        file_path = '{self.path}/{:%Y-%m-%b-%d_%H-%M-%S}.{}'.format(now, self.extension).lower()
+        timestamp = datetime.now().astimezone().strftime('%Y-%m-%d_%H-%M-%S%z')
+        file_path = f'{self.path}/{timestamp}.{self.extension}'
         cv2.imwrite(file_path, im)
 
     def rm_list(self):

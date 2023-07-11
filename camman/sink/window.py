@@ -1,8 +1,9 @@
 import cv2
 
 class Window:
-    def __init__(self, title='cam-man'):
+    def __init__(self, title='cam-man', closeable=False):
         self.title = title
+        self.closeable = closeable
         self.open = True
 
     def update(self, im):
@@ -10,5 +11,5 @@ class Window:
             return
         cv2.imshow(self.title, im)
         c = cv2.waitKey(1)
-        if c == 27:
+        if self.closeable and c == 27:
             self.open = False
