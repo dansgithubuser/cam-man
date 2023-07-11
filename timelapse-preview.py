@@ -5,6 +5,12 @@ import cv2
 import os
 import re
 
+def put_text(image, s, x, y):
+    for line in s.splitlines():
+        cv2.putText(image, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+        cv2.putText(image, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        y += 12
+
 paths = sorted([
     path
     for path in os.listdir('.')
@@ -13,8 +19,8 @@ paths = sorted([
 i = 0
 done = False
 while not done:
-    print(paths[i], end='\r')
     im = cv2.imread(paths[i])
+    put_text(im, paths[i], 8, 18)
     cv2.imshow('timelapse-preview', im)
     k = -1
     while k == -1:
