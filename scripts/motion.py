@@ -6,7 +6,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument('camera_index', nargs='?', default=0, type=int)
-parser.add_argument('--background-smoothness', '-s', default=10, type=int)
+parser.add_argument('--background-smoothness', '-s', default=10.0, type=float)
 parser.add_argument('--threshold', '-t', default=0.05, type=float)
 args = parser.parse_args()
 
