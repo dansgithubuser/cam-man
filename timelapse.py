@@ -220,13 +220,7 @@ def main():
         if args.skip_similar:
             if not similar_checker.is_similar(frame):
                 save(frame)
-                for row_i, row in enumerate(similar_checker.sections):
-                    for col_i, section in enumerate(row):
-                        if section.was_similar:
-                            print('-', end='')
-                        else:
-                            print('X', end='')
-                    print()
+            any_dissimilar = False
             for row_i, row in enumerate(similar_checker.sections):
                 for col_i, section in enumerate(row):
                     if section.d_hist:
@@ -236,6 +230,15 @@ def main():
                             col_i / len(row) * frame.shape[1] + 8,
                             (row_i + 1/2) / len(similar_checker.sections) * frame.shape[0],
                         )
+                    any_dissimilar |= not section.was_similar
+            if any_dissimilar:
+                for row_i, row in enumerate(similar_checker.sections):
+                    for col_i, section in enumerate(row):
+                        if section.was_similar:
+                            print('-', end='')
+                        else:
+                            print('X', end='')
+                    print()
         else:
             save(frame)
         cv2.imshow('preview', frame)
