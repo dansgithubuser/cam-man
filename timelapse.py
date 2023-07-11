@@ -78,12 +78,15 @@ class SimilarCheckerSection:
         # state
         self.image_section = None
         self.d_hist = []
-        self.threshold = 1.0
+        self.threshold = math.inf
         self.t_to_threshold_fit = self.threshold_fit_time
         self.was_similar = None
 
     def fit_threshold(self):
-        self.threshold = (self.threshold + max(self.d_hist)) / 2
+        if self.threshold == math.inf:
+            self.threshold = max(self.d_hist)
+        else:
+            self.threshold = (self.threshold + max(self.d_hist)) / 2
 
     def expand_threshold(self):
         self.threshold = max(self.threshold, max(self.d_hist))
