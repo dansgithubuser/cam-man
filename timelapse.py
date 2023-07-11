@@ -31,7 +31,6 @@ parser.add_argument('--similarity-max-time-between-images', type=int, default=30
     help='When to save an image regardless - how quick does the scene change without disturbance?')
 parser.add_argument('--rm-thresh-gb', type=float, default=1, help='Remove old images when this much disk or less remains, in gigabytes.')
 parser.add_argument('--rm-amount-gb', type=float, default=0.1, help='Remove this many gigabytes of images when threshold reached.')
-parser.add_argument('--preview', action='store_true')
 args = parser.parse_args()
 
 class BoolHistChunk:
@@ -62,11 +61,14 @@ class BoolHist:
         if len(self.chunks) > self.num_chunks:
             del self.chunks[0]
 
+    def size(self):
+        return sum(chunk.size() for chunk in self.chunks)
+
     def true_rate(self):
-        total_size = sum(chunk.size() for chunk in self.chunks)
-        if total_size < self.chunk_size:
+        size = self.size()
+        if size < self.chunk_size:
             return 0
-        return sum(chunk.t for chunk in self.chunks) / total_size
+        return sum(chunk.t for chunk in self.chunks) / size
 
 class SimilarCheckerSection:
     def __init__(self, history_size, threshold_fit_time):
@@ -78,6 +80,7 @@ class SimilarCheckerSection:
         self.d_hist = []
         self.threshold = 1.0
         self.t_to_threshold_fit = self.threshold_fit_time
+        self.was_similar = None
 
     def fit_threshold(self):
         self.threshold = (self.threshold + max(self.d_hist)) / 2
@@ -97,7 +100,8 @@ class SimilarCheckerSection:
         if len(self.d_hist) > self.history_size:
             del self.d_hist[0]
         # compare to threshold (check if dissimilar)
-        if d > self.threshold:
+        self.was_similar = d <= self.threshold
+        if not self.was_similar:
             self.image_section = image_section
             self.t_to_threshold_fit = self.threshold_fit_time
             return False
@@ -137,7 +141,7 @@ class SimilarChecker:
         self.attention_hist = BoolHist(max_time_between_images, 2)
         self.t_since_image = 0
 
-    def is_similar(self, frame, print_status=False):
+    def is_similar(self, frame):
         # rein in attention frequency
         if self.attention_hist.true_rate() > self.max_attention_frequency:
             for row in self.sections:
@@ -158,15 +162,9 @@ class SimilarChecker:
         attention = not all(all(row) for row in similar)
         self.attention_hist.update(attention)
         if attention:
-            print(datetime.datetime.now().isoformat())
-            for row_i, row in enumerate(similar):
-                for similar in row:
-                    if similar:
-                        print('-', end='')
-                    else:
-                        print('X', end='')
-                print()
-            self.attention = self.attention_span
+            # first
+            if self.attention_hist.size() != 1:
+                self.attention = self.attention_span
             self.t_since_image = 0
             return False
         # continue paying attention
@@ -198,25 +196,47 @@ def rm_old():
         os.remove(path)
         if shutil.disk_usage('.').free / 1e9> args.rm_thresh_gb + args.rm_amount_gb: return
 
+def put_text(frame, s, x, y):
+    for line in s.splitlines():
+        cv2.putText(frame, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+        cv2.putText(frame, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+        y += 12
+
+def save(frame):
+    now = datetime.datetime.now()
+    file_name = '{:%Y-%m-%b-%d_%H-%M-%S}.{}'.format(now, args.extension).lower()
+    cv2.imwrite(file_name, frame)
+    print(now.isoformat())
+
 def main():
     cap = cv2.VideoCapture(args.camera_index)
     if args.width: cap.set(cv2.CAP_PROP_FRAME_WIDTH, args.width)
     if args.height: cap.set(cv2.CAP_PROP_FRAME_HEIGHT, args.height)
     while True:
         ret, frame = cap.read()
-        if args.preview:
-            cv2.imshow('preview', frame)
-            cv2.waitKey(1)
-        if not args.skip_similar or not similar_checker.is_similar(frame, print_status=True):
-            file_name = (
-                '{:%Y-%m-%b-%d_%H-%M-%S}.{}'
-                .format(
-                    datetime.datetime.now(),
-                    args.extension,
-                )
-                .lower()
-            )
-            cv2.imwrite(file_name, frame)
+        if args.skip_similar:
+            if not similar_checker.is_similar(frame):
+                save(frame)
+                for row_i, row in enumerate(similar_checker.sections):
+                    for col_i, section in enumerate(row):
+                        if section.was_similar:
+                            print('-', end='')
+                        else:
+                            print('X', end='')
+                    print()
+            for row_i, row in enumerate(similar_checker.sections):
+                for col_i, section in enumerate(row):
+                    if section.d_hist:
+                        put_text(
+                            frame,
+                            f'{section.d_hist[-1]:.3}\n{section.threshold:.3}',
+                            col_i / len(row) * frame.shape[1] + 8,
+                            (row_i + 1/2) / len(similar_checker.sections) * frame.shape[0],
+                        )
+        else:
+            save(frame)
+        cv2.imshow('preview', frame)
+        cv2.waitKey(1)
         time.sleep(args.period)
         rm_old()
 
