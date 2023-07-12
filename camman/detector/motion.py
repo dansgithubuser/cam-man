@@ -30,8 +30,7 @@ class Motion:
         contours = [(i, cv2.contourArea(i)) for i in contours]
         contours = [i for i in contours if i[1] > self.area_threshold]
         self.contours = contours
-        print(sum(i[1] for i in contours))
-        return
+        return self.contours
 
     def visualize(self):
         im = np.uint8(255 * self.im + 64 * cv2.cvtColor(self.im_thresh, cv2.COLOR_GRAY2RGB))
