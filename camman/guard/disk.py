@@ -13,9 +13,9 @@ class Disk:
         if now - self.last_check_at < 60:
             return
         self.last_check_at = now
-        if shutil.disk_usage('.').free / 1e9 > self.rm_thresh_gb:
+        if shutil.disk_usage('.').free / 1e9 > self.min_free_gb:
             return
         for path in self.rm_list():
             os.remove(path)
-            if shutil.disk_usage('.').free / 1e9 > self.rm_thresh_gb + self.rm_amount_gb:
+            if shutil.disk_usage('.').free / 1e9 > self.min_free_gb + self.rm_amount_gb:
                 break
