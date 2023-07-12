@@ -7,11 +7,11 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('camera_index', nargs='?', default=0, type=int)
 parser.add_argument('--background-smoothness', '-s', default=10.0, type=float)
-parser.add_argument('--threshold', '-t', default=0.05, type=float)
+parser.add_argument('--diff-threshold', '--dt', default=0.05, type=float)
 args = parser.parse_args()
 
 cam = camman.Cam(args.camera_index)
-motion_detector = camman.detector.Motion(args.background_smoothness, args.threshold)
+motion_detector = camman.detector.Motion(args.background_smoothness, args.diff_threshold)
 window = camman.sink.Window(closeable=True)
 
 while True:

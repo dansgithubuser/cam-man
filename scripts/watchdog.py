@@ -13,8 +13,8 @@ parser.add_argument('--height', type=int)
 parser.add_argument('--fps', type=int)
 parser.add_argument('--period', type=float, default=300.0)
 parser.add_argument('--motion-background-smoothness', type=float, default=10.0)
-parser.add_argument('--motion-pixel-threshold', type=float, default=0.05)
-parser.add_argument('--motion-blob-threshold', type=float, default=100)
+parser.add_argument('--motion-diff-threshold', type=float, default=0.05)
+parser.add_argument('--motion-area-threshold', type=float, default=100)
 parser.add_argument('--attention-period', type=float, default=1.0)
 parser.add_argument('--attention-span', type=float, default=60.0)
 parser.add_argument('--extension', '-e', default='jpg')
@@ -30,8 +30,8 @@ def main():
     )
     motion_detector = camman.detector.Motion(
         args.motion_background_smoothness,
-        args.motion_pixel_threshold,
-        args.motion_blob_threshold,
+        args.motion_diff_threshold,
+        args.motion_area_threshold,
     )
     window = camman.sink.Window()
     timelapse = camman.sink.Timelapse(
