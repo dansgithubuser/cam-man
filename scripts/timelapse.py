@@ -15,16 +15,19 @@ parser.add_argument('--width', type=int)
 parser.add_argument('--height', type=int)
 parser.add_argument('--extension', '-e', default='png')
 parser.add_argument('--path', default=f'timelapse-{TIMESTAMP}')
+parser.add_argument('--preview', action='store_true')
 args = parser.parse_args()
 
 def main():
     cam = camman.Cam(args.camera_index, args.width, args.height)
-    window = camman.sink.Window()
+    if args.preview:
+        window = camman.sink.Window()
     timelapse = camman.sink.Timelapse(args.extension, args.path)
     while True:
         im = cam.read()
         assert im is not None
-        window.update(im)
+        if args.preview:
+            window.update(im)
         timelapse.update(im)
         time.sleep(args.period)
 
