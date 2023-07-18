@@ -1,7 +1,7 @@
 import cv2
 
 def put_text(
-    frame,
+    im,
     s,
     x,
     y,
@@ -10,6 +10,6 @@ def put_text(
     bg_color=(0, 0, 0),
 ):
     for line in s.splitlines():
-        cv2.putText(frame, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, size, bg_color, 2)
-        cv2.putText(frame, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, size, fg_color, 1)
+        cv2.putText(im, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, size, bg_color, 2)
+        cv2.putText(im, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, size, fg_color, 1)
         y += 24 * size
