@@ -9,10 +9,11 @@ class Cam:
         width=None,
         height=None,
         fps=None,
+        outer_fps=None,
         pixel_format=None,
         **kwargs,
     ):
-        self.fps = fps
+        self.outer_fps = outer_fps
         self.cap = cv2.VideoCapture(index, **kwargs)
         if width: self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         if height: self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
@@ -22,8 +23,8 @@ class Cam:
 
     def read(self):
         ret, im = self.cap.read()
-        if self.fps:
-            while time.time() - self.last_read_at < 0.95 / self.fps:
+        if self.outer_fps:
+            while time.time() - self.last_read_at < 0.95 / self.outer_fps:
                 ret, im = self.cap.read()
         self.last_read_at = time.time()
         if not ret:
