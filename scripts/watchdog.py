@@ -20,6 +20,7 @@ parser.add_argument('--attention-period', type=float, default=1.0)
 parser.add_argument('--attention-span', type=float, default=5.0)
 parser.add_argument('--extension', '-e', default='jpg')
 parser.add_argument('--path', default='watchdog')
+parser.add_argument('--preview', action='store_true')
 args = parser.parse_args()
 
 def main():
@@ -34,7 +35,8 @@ def main():
         args.motion_diff_threshold,
         args.motion_area_threshold,
     )
-    window = camman.sink.Window()
+    if args.preview:
+        window = camman.sink.Window()
     timelapse = camman.sink.Timelapse(
         args.extension,
         args.path,
@@ -57,6 +59,7 @@ def main():
             timelapse.period = args.period
         timelapse.update(im)
         disk_guard.update()
-        window.update(motion_detector.visualize())
+        if args.preview:
+            window.update(motion_detector.visualize())
 
 camman.Supervisor(main).run()
