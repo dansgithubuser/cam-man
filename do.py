@@ -6,12 +6,14 @@ import datetime
 import os
 import re
 import signal
+import string
 import subprocess
 import sys
 
 #===== args =====#
 parser = argparse.ArgumentParser()
 parser.add_argument('--run', '-r', metavar='<script invocation>')
+parser.add_argument('--systemd-install', metavar='<script path>')
 args = parser.parse_args()
 
 #===== consts =====#
@@ -90,3 +92,32 @@ if len(sys.argv) == 1:
 
 if args.run:
     invoke(args.run, env_add={'PYTHONPATH': '.'})
+
+if args.systemd_install:
+    print('short unique description:')
+    desc = input()
+    print()
+    print('script args:')
+    script_args = input()
+    print()
+    script_path = os.path.abspath(args.systemd_install)
+    exec_start = f'{sys.executable} -u {script_path} {script_args}'
+    with open('systemd/template.service') as f:
+        template = f.read()
+    service_text = template.format(
+        description=desc,
+        python_path=DIR,
+        exec_start=exec_start,
+    )
+    remove_punctuation = str.maketrans('', '', string.punctuation)
+    service_file_name = 'camman_' + desc.translate(remove_punctuation).replace(' ', '_').lower() + '.service'
+    service_path = f'/etc/systemd/system/{service_file_name}'
+    print(f"I will write the following to '{service_path}':")
+    print()
+    print(service_text)
+    print()
+    print('OK? Enter to proceed, ctrl-c to abort.')
+    input()
+    with open('.service.tmp', 'w') as f:
+        f.write(service_text)
+    invoke(f'sudo systemd/install.sh {service_path} {service_file_name}')
