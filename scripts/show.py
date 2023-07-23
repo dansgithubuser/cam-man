@@ -21,7 +21,7 @@ def main():
         args.fps,
         args.pixel_format,
     )
-    window = camman.sink.Window(closeable=True)
+    window = camman.sink.Window()
     while True:
         im = cam.read()
         assert im is not None
