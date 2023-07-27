@@ -10,6 +10,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('camera_index', nargs='?', default=0, type=int, help='Which camera to use, 0 for "/dev/video0".')
 parser.add_argument('--width', type=int, help='Width in pixels to request from the camera.')
 parser.add_argument('--height', type=int, help='Height in pixels to request from the camera.')
+parser.add_argument('--ignore-top', type=int, default=0, help='Pixels from the top to ignore in motion detection.')
+parser.add_argument('--ignore-bottom', type=int, default=0, help='Pixels from the bottom to ignore in motion detection.')
+parser.add_argument('--ignore-left', type=int, default=0, help='Pixels from the left to ignore in motion detection.')
+parser.add_argument('--ignore-right', type=int, default=0, help='Pixels from the right to ignore in motion detection.')
 parser.add_argument('--fps', type=int, help='Frames per second to request from the camera.')
 parser.add_argument('--outer-fps', type=int, help='Frames per second to send for motion detection and saving to disk.')
 parser.add_argument('--period', type=float, default=300.0, help='How often to save an image normally.')
@@ -48,7 +52,8 @@ def main():
         now = time.time()
         im = cam.read()
         assert im is not None
-        motion_detector.update(im)
+        im_crop = camman.im.crop(im, args.ignore_top, args.ignore_bottom, args.ignore_left, args.ignore_right)
+        motion_detector.update(im_crop)
         if motion_detector.detect():
             if now >= attention_until:
                 print(datetime.now().astimezone().strftime('%Y-%m-%d_%H-%M-%S%z'), 'motion!')
@@ -60,6 +65,6 @@ def main():
         timelapse.update(im)
         disk_guard.update()
         if args.preview:
-            window.update(motion_detector.visualize())
+            window.update(motion_detector.visualize(im, args.ignore_left, args.ignore_top))
 
 camman.Supervisor(main).run()

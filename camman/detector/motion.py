@@ -32,12 +32,16 @@ class Motion:
         self.contours = contours
         return self.contours
 
-    def visualize(self):
-        im = np.uint8(255 * self.im + 64 * cv2.cvtColor(self.im_thresh, cv2.COLOR_GRAY2RGB))
-        im = self.im + cv2.cvtColor(self.im_thresh, cv2.COLOR_GRAY2RGB) / 2
+    def visualize(self, im=None, x=0, y=0):
+        if im is None:
+            im = self.im
+        else:
+            im = np.float32(im) / 256
+        h, w = self.im_thresh.shape[:2]
+        im[y:y+h, x:x+w] += cv2.cvtColor(self.im_thresh, cv2.COLOR_GRAY2RGB) / 2
         if self.contours:
             cv2.drawContours(
-                im,
+                im[y:y+h, x:x+w],
                 [i[0] for i in self.contours],
                 -1,
                 (1.0, 0.0, 1.0),
