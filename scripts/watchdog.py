@@ -23,6 +23,7 @@ parser.add_argument('--motion-blob-stride', type=int, default=4, help='Side leng
 parser.add_argument('--motion-blob-threshold', type=int, default=25, help='How many blobs should be in motion to start paying attention.')
 parser.add_argument('--attention-period', type=float, default=1.0, help='How often to save an image when paying attention.')
 parser.add_argument('--attention-span', type=float, default=5.0, help='How long attention should last.')
+parser.add_argument('--attention-context', type=float, default=5.0, help='How long attention should extend backward in time.')
 parser.add_argument('--extension', '-e', default='jpg', help='Image file extension to use, default "jpg".')
 parser.add_argument('--path', default='watchdog', help='Where to store images.')
 parser.add_argument('--preview', action='store_true', help='Open a window showing what is going on.')
@@ -47,6 +48,7 @@ def main():
         args.extension,
         args.path,
         args.period,
+        args.attention_context,
     )
     disk_guard = camman.guard.Disk(timelapse.rm_list)
     attention_until = time.time()
@@ -62,6 +64,7 @@ def main():
             attention_until = now + args.attention_span
         if now < attention_until:
             timelapse.period = args.attention_period
+            timelapse.save_context()
         else:
             timelapse.period = args.period
         timelapse.update(im)
