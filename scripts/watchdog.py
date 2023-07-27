@@ -19,7 +19,8 @@ parser.add_argument('--outer-fps', type=int, help='Frames per second to send for
 parser.add_argument('--period', type=float, default=300.0, help='How often to save an image normally.')
 parser.add_argument('--motion-background-smoothness', type=float, default=10.0, help='How slowly the estimated background changes.')
 parser.add_argument('--motion-diff-threshold', type=float, default=0.15, help='How much change is considered motion per pixel, grayscale 0-1.')
-parser.add_argument('--motion-area-threshold', type=float, default=2500, help='How many pixels should be in motion to start paying attention.')
+parser.add_argument('--motion-blob-stride', type=int, default=4, help='Side length of a square blob in pixels.')
+parser.add_argument('--motion-blob-threshold', type=int, default=25, help='How many blobs should be in motion to start paying attention.')
 parser.add_argument('--attention-period', type=float, default=1.0, help='How often to save an image when paying attention.')
 parser.add_argument('--attention-span', type=float, default=5.0, help='How long attention should last.')
 parser.add_argument('--extension', '-e', default='jpg', help='Image file extension to use, default "jpg".')
@@ -37,7 +38,8 @@ def main():
     motion_detector = camman.detector.Motion(
         args.motion_background_smoothness,
         args.motion_diff_threshold,
-        args.motion_area_threshold,
+        args.motion_blob_stride,
+        args.motion_blob_threshold,
     )
     if args.preview:
         window = camman.sink.Window()
