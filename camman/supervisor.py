@@ -6,11 +6,12 @@ class Supervisor:
         self.f = f
 
     def run(self):
-        while True:
-            try:
-                self.f()
-            except KeyboardInterrupt:
-                break
-            except:
-                traceback.print_exc()
-            time.sleep(1)
+        try:
+            while True:
+                try:
+                    self.f()
+                except:
+                    traceback.print_exc()
+                    time.sleep(1)
+        except KeyboardInterrupt:
+            pass
