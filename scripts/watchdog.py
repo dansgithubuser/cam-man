@@ -17,6 +17,7 @@ parser.add_argument('--ignore-right', type=int, default=0, help='Pixels from the
 parser.add_argument('--fps', type=int, help='Frames per second to request from the camera.')
 parser.add_argument('--outer-fps', type=int, help='Frames per second to send for motion detection and saving to disk.')
 parser.add_argument('--period', type=float, default=300.0, help='How often to save an image normally.')
+parser.add_argument('--motion-downsample-stride', type=int, default=4, help='Downsample stride in pixels when feeding into motion detector.')
 parser.add_argument('--motion-background-smoothness', type=float, default=10.0, help='How slowly the estimated background changes.')
 parser.add_argument('--motion-diff-threshold', type=float, default=0.15, help='How much change is considered motion per pixel, grayscale 0-1.')
 parser.add_argument('--motion-blob-stride', type=int, default=4, help='Side length of a square blob in pixels.')
@@ -37,6 +38,7 @@ def main():
         args.fps,
     )
     motion_detector = camman.detector.Motion(
+        args.motion_downsample_stride,
         args.motion_background_smoothness,
         args.motion_diff_threshold,
         args.motion_blob_stride,

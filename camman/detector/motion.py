@@ -4,11 +4,13 @@ import numpy as np
 class Motion:
     def __init__(
         self,
+        downsample_stride=4,
         background_smoothness=10,
         diff_threshold=0.05,
-        blob_stride=10,
-        blob_threshold=10,
+        blob_stride=4,
+        blob_threshold=25,
     ):
+        self.downsample_stride = downsample_stride
         d = background_smoothness + 1
         self.a = background_smoothness / d
         self.b = 1 / d
@@ -23,7 +25,7 @@ class Motion:
         self.im_blobs = None
 
     def update(self, im):
-        self.im = np.float32(im) / 256
+        self.im = np.float32(im[::self.downsample_stride, ::self.downsample_stride]) / 256
         if self.im_back is None:
             self.im_back = self.im
         else:
@@ -49,12 +51,22 @@ class Motion:
         return n_blobs > self.blob_thresh
 
     def visualize(self, im=None, x=0, y=0):
+        h, w = self.im.shape[:2]
+        h *= self.downsample_stride
+        w *= self.downsample_stride
         if im is None:
-            im = self.im
+            im = cv2.resize(self.im, (w, h), interpolation=cv2.INTER_NEAREST)
         else:
             im = np.float32(im) / 256
-        h, w = self.im_thresh.shape[:2]
-        im[y:y+h, x:x+w] += cv2.cvtColor(self.im_thresh, cv2.COLOR_GRAY2RGB) / 2
+        im[y:y+h, x:x+w] += cv2.resize(
+            cv2.cvtColor(self.im_thresh / 2, cv2.COLOR_GRAY2RGB),
+            (w, h),
+            interpolation=cv2.INTER_NEAREST,
+        )
         if self.im_blobs is not None:
-            im[y:y+h, x:x+w] += self.im_blobs
+            im[y:y+h, x:x+w] += cv2.resize(
+                self.im_blobs,
+                (w, h),
+                interpolation=cv2.INTER_NEAREST,
+            )
         return im
