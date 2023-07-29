@@ -51,12 +51,13 @@ class Motion:
         return n_blobs > self.blob_thresh
 
     def visualize(self, im=None, x=0, y=0):
-        h, w = self.im.shape[:2]
-        h *= self.downsample_stride
-        w *= self.downsample_stride
         if im is None:
+            h, w = self.im.shape[:2]
+            h *= self.downsample_stride
+            w *= self.downsample_stride
             im = cv2.resize(self.im, (w, h), interpolation=cv2.INTER_NEAREST)
         else:
+            h, w = im.shape[:2]
             im = np.float32(im) / 256
         im[y:y+h, x:x+w] += cv2.resize(
             cv2.cvtColor(self.im_thresh / 2, cv2.COLOR_GRAY2RGB),
