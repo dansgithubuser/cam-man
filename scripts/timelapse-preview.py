@@ -33,6 +33,7 @@ while not done:
             done = True
             break
     if k in [
+        ord('d'),
         ord('j'),
         83,  # right
         13,  # enter
@@ -40,22 +41,31 @@ while not done:
     ]:
         i += 1
     elif k in [
+        ord('s'),
         ord('k'),
         81,  # left
     ]:
         i -= 1
-    elif k == 84:  # down
+    elif k in [
+        ord('f'),
+        84,  # down
+    ]:
         i += 10
-    elif k == 82:  # up
+    elif k in [
+        ord('a'),
+        82,  # up
+    ]:
         i -= 10
-    elif k == ord('l'):
+    elif k == ord('c'):
         i += 100
-    elif k == ord('h'):
+    elif k == ord('x'):
         i -= 100
-    elif k == ord(';'):
+    elif k == ord('v'):
         i += 10_000
-    elif k == ord('g'):
+    elif k == ord('z'):
         i -= 10_000
+    elif k == 87:  # end
+        i = len(paths) - 1
     elif k == ord('r'):
         paths = get_paths()
     elif k == 27:  # escape
