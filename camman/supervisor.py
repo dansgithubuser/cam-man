@@ -10,7 +10,9 @@ class Supervisor:
             while True:
                 try:
                     self.f()
-                except:
+                except Exception as e:
+                    if isinstance(e, KeyboardInterrupt):
+                        raise
                     traceback.print_exc()
                     time.sleep(1)
         except KeyboardInterrupt:
