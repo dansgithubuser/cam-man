@@ -36,6 +36,7 @@ def main():
         args.width,
         args.height,
         args.fps,
+        args.outer_fps,
     )
     motion_detector = camman.detector.Motion(
         args.motion_downsample_stride,
