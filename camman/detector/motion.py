@@ -35,7 +35,6 @@ class Motion:
         _, self.im_thresh = cv2.threshold(self.im_gray, self.diff_threshold, 1, cv2.THRESH_BINARY)
 
     def detect(self):
-        self.im_blobs = np.zeros(self.im.shape, dtype=np.float32)
         im_small = self.im_thresh[self.blob_stride//2::self.blob_stride, self.blob_stride//2::self.blob_stride]
         n_blobs = 0
         for y, row in enumerate(im_small):
@@ -47,27 +46,32 @@ class Motion:
                 yf = (y + 1) * self.blob_stride
                 if cv2.countNonZero(self.im_thresh[yi:yf, xi:xf]) != self.blob_stride ** 2: continue
                 n_blobs += 1
-                self.im_blobs[yi:yf, xi:xf] = (1, 0, 1)
+                if self.im_blobs is not None:
+                    self.im_blobs[yi:yf, xi:xf] = (1, 0, 1)
         return n_blobs > self.blob_thresh
 
-    def visualize(self, im=None, x=0, y=0):
-        if im is None:
-            h, w = self.im.shape[:2]
-            h *= self.downsample_stride
-            w *= self.downsample_stride
-            im = cv2.resize(self.im, (w, h), interpolation=cv2.INTER_NEAREST)
-        else:
-            h, w = im.shape[:2]
-            im = np.float32(im) / 256
+    def visualize(self, im, x=0, y=0, w=None, h=None):
+        if self.im_blobs is None:
+            self.im_blobs = np.zeros(self.im.shape, dtype=np.float32)
+            return im
+        if w == None:
+            w = im.shape[1] - x
+        if h == None:
+            h = im.shape[0] - y
+        if im.dtype != np.float32:
+            if im.dtype == np.uint8:
+                im = np.float32(im) / 256
+            else:
+                raise Exception("Don't know how to handle {im.dtype}.")
         im[y:y+h, x:x+w] += cv2.resize(
-            cv2.cvtColor(self.im_thresh / 2, cv2.COLOR_GRAY2RGB),
+            cv2.cvtColor(self.im_thresh / 4, cv2.COLOR_GRAY2RGB),
             (w, h),
             interpolation=cv2.INTER_NEAREST,
         )
-        if self.im_blobs is not None:
-            im[y:y+h, x:x+w] += cv2.resize(
-                self.im_blobs,
-                (w, h),
-                interpolation=cv2.INTER_NEAREST,
-            )
+        im[y:y+h, x:x+w] += cv2.resize(
+            self.im_blobs,
+            (w, h),
+            interpolation=cv2.INTER_NEAREST,
+        )
+        self.im_blobs.fill(0)
         return im
