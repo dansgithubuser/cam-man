@@ -32,7 +32,7 @@ class Timelapse:
         self.last_save_at = now
 
     def save(self, im, t):
-        timestamp = datetime.fromtimestamp(t).astimezone().strftime('%Y-%m-%d_%H-%M-%S%z')
+        timestamp = datetime.fromtimestamp(t).astimezone().strftime('%Y-%m-%d_%H-%M-%S.%f%z')
         file_path = f'{self.path}/{timestamp}.{self.extension}'
         cv2.imwrite(file_path, im)
 
