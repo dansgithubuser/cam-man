@@ -2,14 +2,19 @@ import cv2
 
 def put_text(
     im,
-    s,
+    lines,
     x,
     y,
+    float_fmt='{}',
     size=0.5,
     fg_color=(255, 255, 255),
     bg_color=(0, 0, 0),
 ):
-    for line in s.splitlines():
+    for line in lines:
+        if type(line) == float:
+            line = float_fmt.format(line)
+        else:
+            line = str(line)
         cv2.putText(im, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, size, bg_color, 2)
         cv2.putText(im, line, (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, size, fg_color, 1)
         y += 24 * size

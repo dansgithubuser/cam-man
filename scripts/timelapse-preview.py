@@ -24,7 +24,7 @@ i = 0
 done = False
 while not done:
     im = cv2.imread(paths[i])
-    camman.im.put_text(im, os.path.basename(paths[i]), 8, 18)
+    camman.im.put_text(im, [os.path.basename(paths[i])], 8, 18)
     cv2.imshow('timelapse-preview', im)
     k = -1
     while k == -1:
