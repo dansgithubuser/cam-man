@@ -21,10 +21,12 @@ def main():
         args.fps,
         args.pixel_format,
     )
-    window = camman.sink.Window()
+    window = camman.sink.Window(closeable=True)
     while True:
         im = cam.read()
         assert im is not None
         window.update(im)
+        if not window.open:
+            break
 
 camman.Supervisor(main).run()

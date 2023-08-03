@@ -10,6 +10,7 @@ class Supervisor:
             while True:
                 try:
                     self.f()
+                    break
                 except Exception as e:
                     if isinstance(e, KeyboardInterrupt):
                         raise
