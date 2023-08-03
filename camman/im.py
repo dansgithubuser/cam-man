@@ -29,3 +29,15 @@ def crop(im, top=0, bottom=0, left=0, right=0):
     else:
         right = None
     return im[top:bottom, left:right]
+
+def zoom(im, zoom=1.0, truck=0, pedestal=0):
+    h, w = im.shape[0:2]
+    x = w / 2 + truck
+    y = h / 2 - pedestal
+    h /= zoom
+    w /= zoom
+    xi = round(x - w / 2)
+    xf = round(x + w / 2) + 1
+    yi = round(y - h / 2)
+    yf = round(y + h / 2) + 1
+    return im[yi:yf, xi:xf]
