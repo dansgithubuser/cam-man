@@ -31,3 +31,9 @@ class Cam:
             return None
         else:
             return im
+
+    def fps(self):
+        if self.outer_fps:
+            return outer_fps
+        else:
+            return self.cap.get(cv2.CAP_PROP_FPS)

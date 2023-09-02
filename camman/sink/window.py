@@ -13,3 +13,4 @@ class Window:
         c = cv2.waitKey(1)
         if self.closeable and (c == 27 or not cv2.getWindowProperty(self.title, cv2.WND_PROP_VISIBLE)):
             self.open = False
+        return c
