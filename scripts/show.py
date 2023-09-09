@@ -6,7 +6,6 @@ import cv2
 
 import argparse
 from datetime import datetime
-import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument('camera_index', nargs='?', default=0, type=int)
