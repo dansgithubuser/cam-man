@@ -1,8 +1,12 @@
+import os
 import shutil
 import time
 
 class Disk:
     def __init__(self, rm_list, min_free_gb=1, rm_amount_gb=0.1):
+        trial_rm_list = rm_list()
+        if trial_rm_list:
+            assert os.path.exists(trial_rm_list[0])
         self.rm_list = rm_list
         self.min_free_gb = min_free_gb
         self.rm_amount_gb = rm_amount_gb

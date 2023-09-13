@@ -1,6 +1,7 @@
 import cv2
 
 from datetime import datetime
+import os
 from pathlib import Path
 import threading
 import time
@@ -42,4 +43,4 @@ class Timelapse:
         threading.Thread(target=lambda: [self.save(im, t) for im, t in context]).start()
 
     def rm_list(self):
-        return sorted(os.listdir(self.path))
+        return [os.path.join(self.path, i) for i in sorted(os.listdir(self.path))]
