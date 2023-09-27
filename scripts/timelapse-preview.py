@@ -5,26 +5,23 @@ import camman
 import cv2
 
 import argparse
-import os
+from pathlib import Path
 import re
 
 parser = argparse.ArgumentParser()
 parser.add_argument('path', nargs='?', default='.')
+parser.add_argument('--extension', '-e', default='jpg')
 args = parser.parse_args()
 
 def get_paths():
-    return sorted([
-        os.path.join(args.path, path)
-        for path in os.listdir(args.path)
-        if re.search('(png|jpg)$', path)
-    ])
+    return sorted(Path(args.path).rglob(f'*.{args.extension}'))
 
 paths = get_paths()
 i = 0
 done = False
 while not done:
-    im = cv2.imread(paths[i])
-    camman.im.put_text(im, [os.path.basename(paths[i])], 8, 18)
+    im = cv2.imread(paths[i].as_posix())
+    camman.im.put_text(im, [paths[i].name], 8, 18)
     cv2.imshow('timelapse-preview', im)
     k = -1
     while k == -1:

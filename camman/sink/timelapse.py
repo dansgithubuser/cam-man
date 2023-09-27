@@ -9,7 +9,7 @@ import time
 class Timelapse:
     def __init__(self, extension='png', path='.', period=None, context_duration=None):
         self.extension = extension
-        self.path = path
+        self.path = Path(path)
         self.period = period
         self.context_duration = context_duration
         self.last_save_at = None
@@ -33,9 +33,13 @@ class Timelapse:
         self.last_save_at = now
 
     def save(self, im, t):
-        timestamp = datetime.fromtimestamp(t).astimezone().strftime('%Y-%m-%d_%H-%M-%S.%f%z')
-        file_path = f'{self.path}/{timestamp}.{self.extension}'
-        cv2.imwrite(file_path, im)
+        dt = datetime.fromtimestamp(t).astimezone()
+        y = dt.strftime('%Y')
+        ymd = dt.strftime('%Y-%m-%d')
+        timestamp = dt.strftime('%Y-%m-%d_%H-%M-%S.%f%z')
+        file_path = self.path / y / ymd / f'{timestamp}.{self.extension}'
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        cv2.imwrite(file_path.as_posix(), im)
 
     def save_context(self):
         context = self.context
@@ -43,4 +47,4 @@ class Timelapse:
         threading.Thread(target=lambda: [self.save(im, t) for im, t in context]).start()
 
     def rm_list(self):
-        return [os.path.join(self.path, i) for i in sorted(os.listdir(self.path))]
+        sorted(self.path.rglob('*'))
