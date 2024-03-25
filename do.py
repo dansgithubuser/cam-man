@@ -3,6 +3,7 @@
 #===== imports =====#
 import argparse
 import datetime
+import glob
 import os
 import re
 import signal
@@ -14,6 +15,7 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument('--run', '-r', metavar='<script invocation>')
 parser.add_argument('--systemd-install', metavar='<script path>')
+parser.add_argument('--systemd-ls', '-l', action='store_true')
 args = parser.parse_args()
 
 #===== consts =====#
@@ -121,3 +123,7 @@ if args.systemd_install:
     with open('.service.tmp', 'w') as f:
         f.write(service_text)
     invoke(f'sudo systemd/install.sh {service_path} {service_file_name}')
+
+if args.systemd_ls:
+    for i in glob.glob('/etc/systemd/system/camman_*'):
+        print(i)
