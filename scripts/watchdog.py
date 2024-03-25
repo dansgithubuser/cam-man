@@ -26,6 +26,7 @@ parser.add_argument('--attention-period', type=float, default=1.0, help='How oft
 parser.add_argument('--attention-span', type=float, default=5.0, help='How long attention should last.')
 parser.add_argument('--attention-context', type=float, default=5.0, help='How long attention should extend backward in time.')
 parser.add_argument('--extension', '-e', default='jpg', help='Image file extension to use, default "jpg".')
+parser.add_argument('--max-files', type=int)
 parser.add_argument('--path', default='watchdog', help='Where to store images.')
 parser.add_argument('--preview', action='store_true', help='Open a window showing what is going on.')
 args = parser.parse_args()
@@ -53,7 +54,9 @@ def main():
         args.period,
         args.attention_context,
     )
-    disk_guard = camman.guard.Disk(timelapse.rm_list)
+    guards = [camman.guard.Disk(timelapse.rm_list)]
+    if args.max_files:
+        guards.append(camman.guard.FileCount(timelapse.rm_list, args.max_files))
     attention_until = time.time()
     while True:
         now = time.time()
@@ -71,7 +74,8 @@ def main():
         else:
             timelapse.period = args.period
         timelapse.update(im)
-        disk_guard.update()
+        for guard in guards:
+            guard.update()
         if args.preview:
             window.update(motion_detector.visualize(im, args.ignore_left, args.ignore_top))
 

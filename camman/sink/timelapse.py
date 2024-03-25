@@ -47,4 +47,4 @@ class Timelapse:
         threading.Thread(target=lambda: [self.save(im, t) for im, t in context]).start()
 
     def rm_list(self):
-        sorted(self.path.rglob('*'))
+        return sorted(self.path.rglob('*'))
