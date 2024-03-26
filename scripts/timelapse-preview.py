@@ -12,6 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('path', nargs='?', default='.')
 parser.add_argument('--extension', '-e', default='jpg')
 parser.add_argument('--crop', nargs=4, type=int, metavar=('xi', 'yi', 'xf', 'yf'))
+parser.add_argument('--resize', nargs=2, type=int, metavar=('w', 'h'))
 args = parser.parse_args()
 
 def get_paths():
@@ -26,6 +27,8 @@ while not done:
     if args.crop:
         xi, yi, xf, yf = args.crop
         im = im[yi:yf, xi:xf]
+    if args.resize:
+        im = cv2.resize(im, args.resize)
     cv2.imshow('timelapse-preview', im)
     k = -1
     while k == -1:
