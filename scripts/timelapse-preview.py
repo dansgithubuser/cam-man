@@ -11,6 +11,7 @@ import re
 parser = argparse.ArgumentParser()
 parser.add_argument('path', nargs='?', default='.')
 parser.add_argument('--extension', '-e', default='jpg')
+parser.add_argument('--crop', nargs=4, type=int, metavar=('xi', 'yi', 'xf', 'yf'))
 args = parser.parse_args()
 
 def get_paths():
@@ -22,6 +23,9 @@ done = False
 while not done:
     im = cv2.imread(paths[i].as_posix())
     camman.im.put_text(im, [paths[i].name], 8, 18)
+    if args.crop:
+        xi, yi, xf, yf = args.crop
+        im = im[yi:yf, xi:xf]
     cv2.imshow('timelapse-preview', im)
     k = -1
     while k == -1:
