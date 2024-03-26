@@ -123,6 +123,9 @@ if args.systemd_install:
     with open('.service.tmp', 'w') as f:
         f.write(service_text)
     invoke(f'sudo systemd/install.sh {service_path} {service_file_name}')
+    print('Service is installed & enabled. Start it now? Enter y if so, or anything else otherwise.')
+    if input() == 'y':
+        invoke(f'sudo systemctl restart {service_file_name}')
 
 if args.systemd_ls:
     for i in glob.glob('/etc/systemd/system/camman_*'):
