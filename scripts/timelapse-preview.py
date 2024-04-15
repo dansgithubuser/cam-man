@@ -23,12 +23,12 @@ i = 0
 done = False
 while not done:
     im = cv2.imread(paths[i].as_posix())
-    camman.im.put_text(im, [paths[i].name], 8, 18)
     if args.crop:
         xi, yi, xf, yf = args.crop
         im = im[yi:yf, xi:xf]
     if args.resize:
         im = cv2.resize(im, args.resize)
+    camman.im.put_text(im, [paths[i].name], 8, 18)
     cv2.imshow('timelapse-preview', im)
     k = -1
     while k == -1:
