@@ -7,7 +7,7 @@ from datetime import datetime
 import time
 
 parser = argparse.ArgumentParser()
-parser.add_argument('camera_index', nargs='?', default=0, type=int, help='Which camera to use, 0 for "/dev/video0".')
+parser.add_argument('camera_index', nargs='?', type=int, help='Which camera to use, 0 for "/dev/video0".')
 parser.add_argument('--width', type=int, help='Width in pixels to request from the camera.')
 parser.add_argument('--height', type=int, help='Height in pixels to request from the camera.')
 parser.add_argument('--ignore-top', type=int, default=0, help='Pixels from the top to ignore in motion detection.')
@@ -32,6 +32,8 @@ parser.add_argument('--preview', action='store_true', help='Open a window showin
 args = parser.parse_args()
 
 def main():
+    if not args.camera_index:
+        args.camera_index = camman.finders.udevadm_find_cam()[0]
     cam = camman.Cam(
         args.camera_index,
         args.width,
