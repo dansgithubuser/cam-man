@@ -19,7 +19,7 @@ class FileCount:
         rm_list = self.rm_list()
         n_to_rm = len(rm_list) - self.max_files
         for path in rm_list:
-            if n_to_rm == 0: break
+            if n_to_rm <= 0: break
             path = Path(path)
             if path.is_dir():
                 if not next(path.iterdir(), False):
