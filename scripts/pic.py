@@ -21,10 +21,9 @@ def file_timestamp():
 
 cam = camman.Cam(
     args.camera_index,
-    args.width,
-    args.height,
-    None,
-    args.pixel_format,
+    width=args.width,
+    height=args.height,
+    pixel_format=args.pixel_format,
 )
 t0 = time.time()
 while time.time() - t0 < args.delay:

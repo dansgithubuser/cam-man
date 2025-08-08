@@ -6,6 +6,7 @@ class Cam:
     def __init__(
         self,
         index,
+        *,
         width=None,
         height=None,
         fps=None,

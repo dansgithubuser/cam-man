@@ -19,7 +19,7 @@ parser.add_argument('--preview', action='store_true')
 args = parser.parse_args()
 
 def main():
-    cam = camman.Cam(args.camera_index, args.width, args.height)
+    cam = camman.Cam(args.camera_index, width=args.width, height=args.height)
     if args.preview:
         window = camman.sink.Window()
     timelapse = camman.sink.Timelapse(args.extension, args.path)

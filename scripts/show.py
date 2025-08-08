@@ -24,10 +24,10 @@ def file_timestamp():
 def main():
     cam = camman.Cam(
         args.camera_index,
-        args.width,
-        args.height,
-        args.fps,
-        args.pixel_format,
+        width=args.width,
+        height=args.height,
+        fps=args.fps,
+        pixel_format=args.pixel_format,
     )
     window = camman.sink.Window(closeable=True)
     recording = False

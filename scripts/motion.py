@@ -15,8 +15,8 @@ args = parser.parse_args()
 
 cam = camman.Cam(
     args.camera_index,
-    args.width,
-    args.height,
+    width=args.width,
+    height=args.height,
 )
 motion_detector = camman.detector.Motion(
     args.downsample_stride,

@@ -36,10 +36,10 @@ def main():
         args.camera_index = camman.finders.udevadm_find_cam()[0]
     cam = camman.Cam(
         args.camera_index,
-        args.width,
-        args.height,
-        args.fps,
-        args.outer_fps,
+        width=args.width,
+        height=args.height,
+        fps=args.fps,
+        outer_fps=args.outer_fps,
     )
     motion_detector = camman.detector.Motion(
         args.motion_downsample_stride,
