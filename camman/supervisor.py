@@ -9,7 +9,9 @@ class Supervisor:
         try:
             while True:
                 try:
-                    self.f()
+                    ret = self.f()
+                    if ret is not None:
+                        return ret
                     break
                 except Exception as e:
                     if isinstance(e, KeyboardInterrupt):
