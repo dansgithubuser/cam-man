@@ -1,3 +1,4 @@
+from multiprocessing import Process
 import time
 import traceback
 
@@ -18,13 +19,9 @@ class Supervisor:
     def run(self):
         try:
             while True:
-                try:
-                    self.f()
-                    break
-                except Exception as e:
-                    if isinstance(e, KeyboardInterrupt):
-                        raise
-                    traceback.print_exc()
-                    time.sleep(backoff.duration())
+                p = Process(target=self.f)
+                p.start()
+                p.join()
+                time.sleep(backoff.duration())
         except KeyboardInterrupt:
             pass
